@@ -1,0 +1,21 @@
+[slack]
+token = slack token
+username = user name
+channel = channel name
+icon_url = icon url (or blank)
+icon_emoji = :emoji:
+
+[dynamodb]
+table_id = table name
+id_value = unique integer
+source = rainfallforcast
+
+[rainfall]
+lat = latitude
+lon = longitude
+map_image_x = size
+map_image_y = size
+yahoo_app_id = yahoo app id
+google_api_key = google api key
+alert_thresh = rain threshould
+zoom = 14
