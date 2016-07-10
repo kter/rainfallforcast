@@ -1,0 +1,6 @@
+requests
+ConfigParser
+pygooglechart
+pyshorteners
+slackclient
+datetime
