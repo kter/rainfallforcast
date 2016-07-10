@@ -27,7 +27,7 @@ ALERT_THRESH = inifile.get('rainfall', 'alert_thresh')
 ZOOM = inifile.get('rainfall', 'zoom')
 
 def getTimeString(offset_minutes):
-    d = datetime.now() + timedelta(minutes=offset_minutes)
+    d = datetime.now() + timedelta(hours=9, minutes=offset_minutes)
     return d.strftime("%H:%M")
 
 def getRainfallRadarUrl(lat, lon, zoom, width, height):
@@ -85,7 +85,7 @@ def lambda_handler(event, context):
             chart.y_range=(0, math.ceil(max(rainfall_array)))
             chart.set_axis_range(Axis.LEFT, 0, math.ceil(max(rainfall_array)))
     
-        d = datetime.now() + timedelta(minutes=30)
+        d = datetime.now() + timedelta(hours=9, minutes=30)
         date_str = d.strftime("|date:%Y%m%d%H%M|datelabel:on")
     
         radar_url = "http://weather.yahoo.co.jp/weather/zoomradar/?lat=" + LAT + "&lon=" + LON + "&z=12"
