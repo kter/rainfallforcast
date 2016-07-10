@@ -14,6 +14,7 @@ from pyshorteners import Shortener
 import ConfigParser
 from slackclient import SlackClient
 import time
+import boto3
 
 inifile = ConfigParser.SafeConfigParser()
 inifile.read("./config.ini")
@@ -53,17 +54,52 @@ def lambda_handler(event, context):
     json_data = json.loads(result.content)
     
     rainfall = json_data['Feature'][0]['Property']['WeatherList']['Weather']#[3]['Rainfall']
+
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(inifile.get('dynamodb', 'table_id'))
+    key_id = int(inifile.get('dynamodb', 'id_value'))
+    result = table.get_item(
+        Key={
+            'Id': key_id
+        }
+    )
+
+    if 'raining' not in result:
+        table.put_item(
+            Item={
+                "Id":key_id,
+                "raining": False,
+                "source": inifile.get('dynamodb', 'source')}
+        )
+    raining = result['Item']['raining']
+    
+    if rainfall[3]['Rainfall'] >= ALERT_THRESH and raining == False:
+        send_message = True
+        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が予想されます。"
+    elif rainfall[3]['Rainfall'] < ALERT_THRESH and raining == True:
+        send_message = True
+        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "雨が止む予報です。"
+    elif rainfall[3]['Rainfall'] < ALERT_THRESH and raining == True:
+        send_message = True
+        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が雨が止む予報です。"
+    elif rainfall[3]['Rainfall'] >= ALERT_THRESH and raining == False:
+        send_message = False
     
     if rainfall[3]['Rainfall'] >= ALERT_THRESH:
-        send_message = True
-        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が予想されます。"
-    elif rainfall[3]['Rainfall'] < ALERT_THRESH:
-        send_message = True
-        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が予想されます。"
+        table.put_item(
+            Item={
+                "Id":key_id,
+                "raining": True,
+                "source": inifile.get('dynamodb', 'source')}
+        )
     else:
-        send_message = True
-        message = timeString + ": 多分降水量が取れてないです。"
-    
+        table.put_item(
+            Item={
+                "Id":key_id,
+                "raining": False,
+                "source": inifile.get('dynamodb', 'source')}
+        )
+
     if send_message == True:
     
         width = 500
