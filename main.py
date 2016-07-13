@@ -24,7 +24,7 @@ LON = inifile.get('rainfall', 'lon')
 LAT = inifile.get('rainfall', 'lat')
 MAP_IMAGE_X = inifile.get('rainfall', 'map_image_x')
 MAP_IMAGE_Y = inifile.get('rainfall', 'map_image_y')
-ALERT_THRESH = inifile.get('rainfall', 'alert_thresh')
+ALERT_THRESH = float(inifile.get('rainfall', 'alert_thresh'))
 ZOOM = inifile.get('rainfall', 'zoom')
 
 def getTimeString(offset_minutes):
@@ -72,7 +72,7 @@ def lambda_handler(event, context):
                 "source": inifile.get('dynamodb', 'source')}
         )
     raining = result['Item']['raining']
-    
+
     if rainfall[3]['Rainfall'] >= ALERT_THRESH and raining == False:
         send_message = True
         message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が予想されます。"
