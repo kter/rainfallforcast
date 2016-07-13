@@ -78,11 +78,11 @@ def lambda_handler(event, context):
         message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が予想されます。"
     elif rainfall[3]['Rainfall'] < ALERT_THRESH and raining == True:
         send_message = True
-        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "雨が止む予報です。"
-    elif rainfall[3]['Rainfall'] < ALERT_THRESH and raining == True:
+        message = timeString + "で" + "雨が止む予報です。"
+    elif rainfall[3]['Rainfall'] >= ALERT_THRESH and raining == True:
         send_message = True
-        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が雨が止む予報です。"
-    elif rainfall[3]['Rainfall'] >= ALERT_THRESH and raining == False:
+        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が引き続き予報です。"
+    elif rainfall[3]['Rainfall'] < ALERT_THRESH and raining == False:
         send_message = False
     
     if rainfall[3]['Rainfall'] >= ALERT_THRESH:
@@ -131,7 +131,7 @@ def lambda_handler(event, context):
         rainfall_image_url = shorten_url(rainfall_image_url)
         radar_url = shorten_url(radar_url)
     
-        message = unicode(message, 'utf-8') + "\n" + chart_url + "\n" + timeString + u"の雨雲予想図: " + rainfall_image_url + "\n" + u"詳細: " + radar_url + "\n"
+        message = unicode(message, 'utf-8') + "\n" + chart_url + "\n" + timeString + u"の雨雲予想: " + rainfall_image_url + "\n" + u"詳細: " + radar_url + "\n"
     
         sc = SlackClient(inifile.get('slack', 'token'))
         res = sc.api_call("chat.postMessage", channel=inifile.get('slack', 'channel'), text=message, username=inifile.get('slack', 'username'), icon_emoji=inifile.get('slack', 'icon_emoji'))
