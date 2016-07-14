@@ -81,7 +81,7 @@ def lambda_handler(event, context):
         message = timeString + "で" + "雨が止む予報です。"
     elif rainfall[3]['Rainfall'] >= ALERT_THRESH and raining == True:
         send_message = True
-        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が引き続き予報です。"
+        message = timeString + "で" + str(rainfall[3]['Rainfall']) + "mm/hの雨が引き続き降る予報です。"
     elif rainfall[3]['Rainfall'] < ALERT_THRESH and raining == False:
         send_message = False
     
